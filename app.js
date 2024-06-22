@@ -7,8 +7,15 @@ const logger = require("morgan");
 const ErrorHandler = require("./utils/ErrorHandler");
 const { generatedError } = require("./middlewares/errors");
 
+// db connection
+require("./database").connectDatabase();
+
 // logger
 app.use(logger("tiny"));
+
+// bodyparser
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 app.use("/", require("./routes/userRouters"));
 
