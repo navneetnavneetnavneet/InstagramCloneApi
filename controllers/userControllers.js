@@ -45,8 +45,8 @@ exports.logoutuser = catchAsyncError(async (req, res, next) => {
   res.json({ message: "Logout Successfully" });
 });
 
-exports.usersendmail = catchAsyncError(async (req, res, next) => {
-  const user = await User.findOne({ email: req.body.email }).exec();
+exports.sendmailuser = catchAsyncError(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
 
   if (!user) {
     return next(
@@ -66,7 +66,7 @@ exports.usersendmail = catchAsyncError(async (req, res, next) => {
 });
 
 exports.userforgetpassword = catchAsyncError(async (req, res, next) => {
-  const user = await User.findById(req.params.id).exec();
+  const user = await User.findById(req.params.id);
 
   if (!user) {
     return next(
@@ -88,10 +88,20 @@ exports.userforgetpassword = catchAsyncError(async (req, res, next) => {
 });
 
 exports.userresetpassword = catchAsyncError(async (req, res, next) => {
-  const user = await User.findById(req.id).exec();
+  const user = await User.findById(req.id);
 
   user.password = req.body.password;
   await user.save();
 
   sendtoken(user, 200, res);
+});
+
+exports.edituser = catchAsyncError(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(req.id, req.body, { new: true });
+
+  res.status(200).json({
+    success: true,
+    message: "User Updated Successfully",
+    // user
+  });
 });

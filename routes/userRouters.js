@@ -6,9 +6,10 @@ const {
   registeruser,
   loginuser,
   logoutuser,
-  usersendmail,
+  sendmailuser,
   userforgetpassword,
-  userresetpassword
+  userresetpassword,
+  edituser,
 } = require("../controllers/userControllers");
 const { isAuthenticated } = require("../middlewares/auth");
 
@@ -28,12 +29,15 @@ router.post("/user/login", loginuser);
 router.get("/user/logout", isAuthenticated, logoutuser);
 
 // POST /user/send-mail
-router.post("/user/send-mail", usersendmail);
+router.post("/user/send-mail", sendmailuser);
 
 // GET /user/forget-password/:userId
 router.get("/user/forget-password-link/:id", userforgetpassword);
 
 // POST /user/reset-password
 // router.post("/user/reset-password", isAuthenticated, userresetpassword);
+
+// POST /user/edit/
+router.post("/user/edit", isAuthenticated, edituser);
 
 module.exports = router;
