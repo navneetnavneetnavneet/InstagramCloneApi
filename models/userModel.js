@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema(
       maxLength: [15, "password should not exceed more than 15 characters"],
       // match: []
     },
+    resetPasswordToken: {
+      type: String,
+      default: "0",
+    },
   },
   {
     timestamps: true,
