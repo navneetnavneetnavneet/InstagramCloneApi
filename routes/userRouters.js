@@ -2,13 +2,18 @@ const express = require("express");
 const router = express.Router();
 const {
   homepage,
+  loggedInUser,
   registeruser,
   loginuser,
   logoutuser,
 } = require("../controllers/userControllers");
+const { isAuthenticated } = require("../middlewares/auth");
 
 // GET /
-router.get("/", homepage);
+router.get("/", isAuthenticated, homepage);
+
+// POST /user
+router.post("/user", isAuthenticated, loggedInUser);
 
 // POST /user/register
 router.post("/user/register", registeruser);
@@ -17,6 +22,6 @@ router.post("/user/register", registeruser);
 router.post("/user/login", loginuser);
 
 // GET /user/logout
-router.post("/user/logout", logoutuser);
+router.get("/user/logout", isAuthenticated, logoutuser);
 
 module.exports = router;

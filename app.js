@@ -6,9 +6,21 @@ const app = express();
 const logger = require("morgan");
 const ErrorHandler = require("./utils/ErrorHandler");
 const { generatedError } = require("./middlewares/errors");
+const session = require("express-session");
+const cookieparser = require("cookie-parser");
 
 // db connection
 require("./database").connectDatabase();
+
+// session and cookie
+app.use(
+  session({
+    resave: true,
+    saveUninitialized: true,
+    secret: process.env.EXPRESS_SESSION_SECRET,
+  })
+);
+app.use(cookieparser())
 
 // logger
 app.use(logger("tiny"));
