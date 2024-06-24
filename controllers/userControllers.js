@@ -3,6 +3,9 @@ const User = require("../models/userModel");
 const ErrorHandler = require("../utils/ErrorHandler");
 const { sendmail } = require("../utils/SendMail");
 const { sendtoken } = require("../utils/SendToken");
+const { v4: uuidv4 } = require("uuid");
+const path = require("path");
+const imagekit = require("../utils/ImageKit").initImageKit();
 
 exports.homepage = catchAsyncError(async (req, res, next) => {
   res.json({ message: "secure homepage" });
@@ -15,7 +18,6 @@ exports.registeruser = catchAsyncError(async (req, res, next) => {
 });
 
 exports.loggedInUser = catchAsyncError(async (req, res, next) => {
-  console.log(req);
   const user = await User.findById(req.id);
 
   res.json(user);
@@ -99,9 +101,29 @@ exports.userresetpassword = catchAsyncError(async (req, res, next) => {
 exports.edituser = catchAsyncError(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(req.id, req.body, { new: true });
 
+  if (req.files) {
+    // old file delete code
+    if (user.profileImage.fileId !== "") {
+      await imagekit.deleteFile(user.profileImage.fileId);
+    }
+
+    const file = req.files.profileImage;
+    const modifiedFileName = uuidv4() + path.extname(file.name);
+
+    const { fileId, url } = await imagekit.upload({
+      file: file.data,
+      fileName: modifiedFileName,
+    });
+
+    user.profileImage = { fileId, url };
+  }
+
+  await user.save();
+
   res.status(200).json({
     success: true,
     message: "User Updated Successfully",
-    // user
+    user,
   });
 });
+

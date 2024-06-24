@@ -8,6 +8,7 @@ const ErrorHandler = require("./utils/ErrorHandler");
 const { generatedError } = require("./middlewares/errors");
 const session = require("express-session");
 const cookieparser = require("cookie-parser");
+const expressfileupload = require("express-fileupload");
 
 // db connection
 require("./database").connectDatabase();
@@ -20,7 +21,7 @@ app.use(
     secret: process.env.EXPRESS_SESSION_SECRET,
   })
 );
-app.use(cookieparser())
+app.use(cookieparser());
 
 // logger
 app.use(logger("tiny"));
@@ -29,6 +30,10 @@ app.use(logger("tiny"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// express-fileupload
+app.use(expressfileupload());
+
+// routes
 app.use("/", require("./routes/userRouters"));
 
 // error handleing
