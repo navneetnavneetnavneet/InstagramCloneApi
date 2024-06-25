@@ -33,4 +33,23 @@ exports.uploadpost = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.likepost = catchAsyncError(async (req, res, next) => {
+  const user = await User.findById(req.id);
+  const post = await Post.findById(req.params.id);
 
+  let message;
+  if (post.likes.indexOf(user._id) === -1) {
+    post.likes.push(user._id);
+    message= "Post Liked Successfully";
+} else {
+    post.likes.splice(post.likes.indexOf(user._id), 1);
+    message= "Post disLiked Successfully";
+  }
+  await post.save();
+
+  res.status(200).json({
+    success: true,
+    message,
+    post,
+  });
+});
