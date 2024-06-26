@@ -46,6 +46,7 @@ const userSchema = new mongoose.Schema(
       },
     },
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "post" }],
+    savePosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "post" }],
   },
   {
     timestamps: true,

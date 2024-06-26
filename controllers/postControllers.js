@@ -40,10 +40,10 @@ exports.likepost = catchAsyncError(async (req, res, next) => {
   let message;
   if (post.likes.indexOf(user._id) === -1) {
     post.likes.push(user._id);
-    message= "Post Liked Successfully";
-} else {
+    message = "Post Liked Successfully";
+  } else {
     post.likes.splice(post.likes.indexOf(user._id), 1);
-    message= "Post disLiked Successfully";
+    message = "Post disLiked Successfully";
   }
   await post.save();
 
@@ -52,4 +52,17 @@ exports.likepost = catchAsyncError(async (req, res, next) => {
     message,
     post,
   });
+});
+
+exports.savepost = catchAsyncError(async (req, res, next) => {
+  const user = await User.findById(req.id);
+  const post = await Post.findById(req.params.id);
+
+  if (user.savePosts.indexOf(post._id) === -1) {
+    user.savePosts.push(post._id);
+  } else {
+    user.savePosts.splice(user.savePosts.indexOf(), 1);
+  }
+  await user.save();
+  res.json(user);
 });
