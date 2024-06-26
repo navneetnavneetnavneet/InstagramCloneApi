@@ -10,7 +10,8 @@ const {
   userforgetpassword,
   userresetpassword,
   edituser,
-  searchuser
+  searchuser,
+  finduserprofile,
 } = require("../controllers/userControllers");
 const { isAuthenticated } = require("../middlewares/auth");
 
@@ -43,5 +44,8 @@ router.post("/user/edit", isAuthenticated, edituser);
 
 // POST /user/search/username
 router.post("/user/search/:username", isAuthenticated, searchuser);
+
+// GET /user/profile/username
+router.get("/user/profile/:username", isAuthenticated, finduserprofile);
 
 module.exports = router;

@@ -133,3 +133,17 @@ exports.searchuser = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({ users });
 });
+
+exports.finduserprofile = catchAsyncError(async (req, res, next) => {
+  const user = await User.findById(req.id);
+  if (user.username === req.params.username) {
+    res.status(200).json({
+      user,
+    });
+  }
+
+  const finduser = await User.findOne({ username: req.params.username });
+  res.status(200).json({
+    finduser,
+  });
+});
