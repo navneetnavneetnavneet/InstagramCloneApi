@@ -10,6 +10,7 @@ const {
   userforgetpassword,
   userresetpassword,
   edituser,
+  searchuser
 } = require("../controllers/userControllers");
 const { isAuthenticated } = require("../middlewares/auth");
 
@@ -39,5 +40,8 @@ router.get("/user/forget-password-link/:id", userforgetpassword);
 
 // POST /user/edit/
 router.post("/user/edit", isAuthenticated, edituser);
+
+// POST /user/search/username
+router.post("/user/search/:username", isAuthenticated, searchuser);
 
 module.exports = router;

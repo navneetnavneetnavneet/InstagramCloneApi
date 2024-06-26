@@ -64,5 +64,8 @@ exports.savepost = catchAsyncError(async (req, res, next) => {
     user.savePosts.splice(user.savePosts.indexOf(), 1);
   }
   await user.save();
-  res.json(user);
+  res.status(200).json({
+    success: true,
+    message: "Post Saved Successfully",
+  });
 });

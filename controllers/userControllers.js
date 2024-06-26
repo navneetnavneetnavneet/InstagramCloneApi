@@ -127,3 +127,9 @@ exports.edituser = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.searchuser = catchAsyncError(async (req, res, next) => {
+  const regex = new RegExp("^" + req.params.username, "i");
+  const users = await User.find({ username: regex });
+
+  res.status(200).json({ users });
+});
