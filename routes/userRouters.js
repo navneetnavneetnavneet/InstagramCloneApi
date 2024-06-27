@@ -12,6 +12,7 @@ const {
   edituser,
   searchuser,
   finduserprofile,
+  followAndfollowing
 } = require("../controllers/userControllers");
 const { isAuthenticated } = require("../middlewares/auth");
 
@@ -47,5 +48,8 @@ router.post("/user/search/:username", isAuthenticated, searchuser);
 
 // GET /user/profile/username
 router.get("/user/profile/:username", isAuthenticated, finduserprofile);
+
+// GET /user/follow/:userId
+router.get("/user/follow/:id", isAuthenticated, followAndfollowing);
 
 module.exports = router;

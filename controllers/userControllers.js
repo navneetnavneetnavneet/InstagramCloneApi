@@ -147,3 +147,34 @@ exports.finduserprofile = catchAsyncError(async (req, res, next) => {
     finduser,
   });
 });
+
+exports.followAndfollowing = catchAsyncError(async (req, res, next) => {
+  const followKarneWalaUser = await User.findById(req.id); // loggedIn User
+  const followHoneWalaUser = await User.findById(req.params.id); // opposite User
+
+  if (followKarneWalaUser.followings.indexOf(followHoneWalaUser._id) === -1) {
+    followKarneWalaUser.followings.push(followHoneWalaUser._id);
+
+    followHoneWalaUser.followers.push(followKarneWalaUser._id);
+  } else {
+    followKarneWalaUser.followings.splice(
+      followKarneWalaUser.followings.indexOf(followHoneWalaUser._id),
+      1
+    );
+
+    followHoneWalaUser.followers.splice(
+      followHoneWalaUser.followers.indexOf(followKarneWalaUser._id),
+      1
+    );
+  }
+
+  await followKarneWalaUser.save();
+  await followHoneWalaUser.save();
+
+  res.status(200).json({
+    success: true,
+    message: "User Follow and Following Successfully",
+    loggedInUser: followKarneWalaUser,
+    oppositeUser: followHoneWalaUser,
+  });
+});

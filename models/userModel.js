@@ -45,6 +45,8 @@ const userSchema = new mongoose.Schema(
         url: "https://www.pngitem.com/pimgs/m/150-1503945_transparent-user-png-default-user-image-png-png.png",
       },
     },
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
+    followings: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "post" }],
     savePosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "post" }],
   },
