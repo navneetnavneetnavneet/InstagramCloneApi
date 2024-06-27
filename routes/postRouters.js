@@ -4,6 +4,7 @@ const {
   uploadpost,
   likepost,
   savepost,
+  deletepost
 } = require("../controllers/postControllers");
 const { isAuthenticated } = require("../middlewares/auth");
 
@@ -16,6 +17,7 @@ router.get("/like/:id", isAuthenticated, likepost);
 // GET /post/save/:postId
 router.get("/save/:id", isAuthenticated, savepost);
 
-
+// GET/post/delete/:postID
+router.get("/delete/:id", isAuthenticated, deletepost);
 
 module.exports = router;

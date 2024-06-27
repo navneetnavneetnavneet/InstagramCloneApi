@@ -69,3 +69,16 @@ exports.savepost = catchAsyncError(async (req, res, next) => {
     message: "Post Saved Successfully",
   });
 });
+
+exports.deletepost = catchAsyncError(async (req, res, next) => {
+  const user = await User.findById(req.id);
+  const post = await Post.findById(req.params.id);
+
+  user.posts.splice(user.posts.indexOf(post._id), 1);
+  await user.save();
+  res.json({
+    success: true,
+    message: "Post Deleted Successfully",
+    user,
+  });
+});
