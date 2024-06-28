@@ -4,6 +4,7 @@ require("dotenv").config({
 const express = require("express");
 const app = express();
 const logger = require("morgan");
+const cors = require("cors");
 const ErrorHandler = require("./utils/ErrorHandler");
 const { generatedError } = require("./middlewares/errors");
 const session = require("express-session");
@@ -29,6 +30,9 @@ app.use(logger("tiny"));
 // bodyparser
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// cors
+app.use(cors({credentials: true, origin: "http://localhost:5173"}));
 
 // express-fileupload
 app.use(expressfileupload());

@@ -1,12 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const {
+  getallposts,
   uploadpost,
   likepost,
   savepost,
-  deletepost
+  deletepost,
 } = require("../controllers/postControllers");
 const { isAuthenticated } = require("../middlewares/auth");
+
+// GET /
+router.get("/", isAuthenticated, getallposts);
 
 // POST /post/upload
 router.post("/upload", isAuthenticated, uploadpost);

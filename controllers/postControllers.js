@@ -6,6 +6,12 @@ const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const imagekit = require("../utils/ImageKit").initImageKit();
 
+exports.getallposts = catchAsyncError(async (req, res, next) => {
+  const user = await User.findById(req.id);
+  const posts = await Post.find().populate("user");
+  res.json({ message: "All Posts", posts, user });
+});
+
 exports.uploadpost = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id);
   const post = await new Post(req.body).save();
@@ -21,6 +27,7 @@ exports.uploadpost = catchAsyncError(async (req, res, next) => {
 
     post.image = { fileId, url };
   }
+  post.user = user._id;
   user.posts.push(post._id);
 
   await post.save();

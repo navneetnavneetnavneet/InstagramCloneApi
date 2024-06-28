@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const {
-  homepage,
   loggedInUser,
   registeruser,
   loginuser,
@@ -15,9 +14,6 @@ const {
   followAndfollowing
 } = require("../controllers/userControllers");
 const { isAuthenticated } = require("../middlewares/auth");
-
-// GET /
-router.get("/", homepage);
 
 // POST /user
 router.post("/user", isAuthenticated, loggedInUser);

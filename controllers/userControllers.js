@@ -7,10 +7,6 @@ const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 const imagekit = require("../utils/ImageKit").initImageKit();
 
-exports.homepage = catchAsyncError(async (req, res, next) => {
-  res.json({ message: "secure homepage" });
-});
-
 exports.registeruser = catchAsyncError(async (req, res, next) => {
   const user = await new User(req.body).save();
 
@@ -18,8 +14,7 @@ exports.registeruser = catchAsyncError(async (req, res, next) => {
 });
 
 exports.loggedInUser = catchAsyncError(async (req, res, next) => {
-  const user = await User.findById(req.id);
-
+  const user = await User.findById(req.id).populate("posts");
   res.json(user);
 });
 
