@@ -96,6 +96,9 @@ exports.userresetpassword = catchAsyncError(async (req, res, next) => {
 exports.edituser = catchAsyncError(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(req.id, req.body, { new: true });
 
+  if(!user){
+    return next(new ErrorHandler("Please login to access the resource", 404));
+  }
   if (req.files) {
     // old file delete code
     if (user.profileImage.fileId !== "") {
@@ -138,6 +141,11 @@ exports.finduserprofile = catchAsyncError(async (req, res, next) => {
   }
 
   const finduser = await User.findOne({ username: req.params.username });
+
+  if (!finduser) {
+    return next(new ErrorHandler("findUser not found with this username", 404));
+  }
+
   res.status(200).json({
     finduser,
   });

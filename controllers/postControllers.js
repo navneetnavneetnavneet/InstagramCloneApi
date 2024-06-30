@@ -9,25 +9,61 @@ const imagekit = require("../utils/ImageKit").initImageKit();
 exports.getallposts = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id);
   const posts = await Post.find().populate("user");
+
+  if (!user) {
+    return next(new ErrorHandler("User not found !", 404));
+  }
+
+  if (!posts) {
+    return next(new ErrorHandler("All Post not found !", 404));
+  }
+
   res.json({ message: "All Posts", posts, user });
 });
 
+// exports.uploadpost = catchAsyncError(async (req, res, next) => {
+// const user = await User.findById(req.id);
+// const post = await new Post(req.body).save();
+// if (req.files) {
+//   const file = req.files.image;
+//   const modifiedFileName = uuidv4() + path.extname(file.name);
+//   const { fileId, url } = await imagekit.upload({
+//     file: file.data,
+//     fileName: modifiedFileName,
+//   });
+//   post.image = { fileId, url };
+// }
+// post.user = user._id;
+// user.posts.push(post._id);
+// await post.save();
+// await user.save();
+// res.status(201).json({
+//   success: true,
+//   message: "Post Uploaded Successfully",
+//   post,
+// });
+// });
+
 exports.uploadpost = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id);
-  const post = await new Post(req.body).save();
 
-  if (req.files) {
-    const file = req.files.image;
-    const modifiedFileName = uuidv4() + path.extname(file.name);
-
-    const { fileId, url } = await imagekit.upload({
-      file: file.data,
-      fileName: modifiedFileName,
-    });
-
-    post.image = { fileId, url };
+  if (!user) {
+    return next(new ErrorHandler("User not found !", 404));
   }
-  post.user = user._id;
+
+  const file = req.files.image;
+  const modifiedFileName = uuidv4() + path.extname(file.name);
+
+  const { fileId, url } = await imagekit.upload({
+    file: file.data,
+    fileName: modifiedFileName,
+  });
+
+  const post = new Post({
+    image: { fileId, url },
+    caption: req.body.caption,
+    user: user._id,
+  });
   user.posts.push(post._id);
 
   await post.save();
@@ -43,6 +79,14 @@ exports.uploadpost = catchAsyncError(async (req, res, next) => {
 exports.likepost = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id);
   const post = await Post.findById(req.params.id);
+
+  if (!user) {
+    return next(new ErrorHandler("User not found !", 404));
+  }
+
+  if (!post) {
+    return next(new ErrorHandler("Post not found !", 404));
+  }
 
   let message;
   if (post.likes.indexOf(user._id) === -1) {
@@ -65,6 +109,14 @@ exports.savepost = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id);
   const post = await Post.findById(req.params.id);
 
+  if (!user) {
+    return next(new ErrorHandler("User not found !", 404));
+  }
+
+  if (!post) {
+    return next(new ErrorHandler("Post not found !", 404));
+  }
+
   if (user.savePosts.indexOf(post._id) === -1) {
     user.savePosts.push(post._id);
   } else {
@@ -80,6 +132,14 @@ exports.savepost = catchAsyncError(async (req, res, next) => {
 exports.deletepost = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id);
   const post = await Post.findById(req.params.id);
+
+  if (!user) {
+    return next(new ErrorHandler("User not found !", 404));
+  }
+
+  if (!post) {
+    return next(new ErrorHandler("Post not found !", 404));
+  }
 
   user.posts.splice(user.posts.indexOf(post._id), 1);
   await user.save();

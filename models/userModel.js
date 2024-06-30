@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema(
   {
     fullName: {
       type: String,
-      // required: [true, "FullName is required !"],
+      required: [true, "FullName is required !"],
       trim: true,
     },
     username: {
