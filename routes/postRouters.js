@@ -6,6 +6,7 @@ const {
   likepost,
   savepost,
   deletepost,
+  sendcomment,
 } = require("../controllers/postControllers");
 const { isAuthenticated } = require("../middlewares/auth");
 
@@ -23,5 +24,8 @@ router.get("/save/:id", isAuthenticated, savepost);
 
 // GET/post/delete/:postID
 router.get("/delete/:id", isAuthenticated, deletepost);
+
+// POST /post/comment/:postId
+router.post("/comment/:id", isAuthenticated, sendcomment);
 
 module.exports = router;

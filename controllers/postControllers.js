@@ -4,11 +4,22 @@ const User = require("../models/userModel");
 const Post = require("../models/postModel");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
+const Comment = require("../models/commentModel");
 const imagekit = require("../utils/ImageKit").initImageKit();
 
 exports.getallposts = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id);
-  const posts = await Post.find().populate("user");
+  const posts = await Post.find()
+    .populate({
+      path: "user",
+    })
+    .populate({
+      path: "comments",
+      populate: {
+        path: "users",
+      },
+    });
+  // console.log(posts);
 
   if (!user) {
     return next(new ErrorHandler("User not found !", 404));
@@ -151,5 +162,25 @@ exports.deletepost = catchAsyncError(async (req, res, next) => {
     success: true,
     message: "Post Deleted Successfully",
     user,
+  });
+});
+
+exports.sendcomment = catchAsyncError(async (req, res, next) => {
+  const user = await User.findById(req.id);
+  const post = await Post.findById(req.params.id);
+  const comment = await new Comment(req.body).save();
+
+  comment.post = post._id;
+  comment.users.push(user._id);
+  post.comments.push(comment._id);
+
+  await post.save();
+  await comment.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Send Comment Seccessfully",
+    comment,
+    post,
   });
 });
