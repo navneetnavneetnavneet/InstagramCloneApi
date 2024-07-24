@@ -11,7 +11,11 @@ const {
   edituser,
   searchuser,
   finduserprofile,
-  followAndfollowing
+  followAndfollowing,
+
+  // 
+  findUserPost,
+  findUserSavePost
 } = require("../controllers/userControllers");
 const { isAuthenticated } = require("../middlewares/auth");
 
@@ -31,7 +35,7 @@ router.get("/user/logout", isAuthenticated, logoutuser);
 router.post("/user/send-mail", sendmailuser);
 
 // GET /user/forget-password/:userId
-router.get("/user/forget-password-link/:id", userforgetpassword);
+router.post("/user/forget-password-link/:id", userforgetpassword);
 
 // POST /user/reset-password
 // router.post("/user/reset-password", isAuthenticated, userresetpassword);
@@ -47,5 +51,16 @@ router.get("/user/profile/:username", isAuthenticated, finduserprofile);
 
 // GET /user/follow/:userId
 router.get("/user/follow/:id", isAuthenticated, followAndfollowing);
+
+
+
+// findUser details
+
+// GET /user/post/:userId
+router.get("/user/post/:id", isAuthenticated, findUserPost);
+
+// GET /user/savepost/:userId
+router.get("/user/savepost/:id", isAuthenticated, findUserSavePost);
+
 
 module.exports = router;

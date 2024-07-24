@@ -43,6 +43,7 @@ exports.logoutuser = catchAsyncError(async (req, res, next) => {
 });
 
 exports.sendmailuser = catchAsyncError(async (req, res, next) => {
+  console.log(req.body.email);
   const user = await User.findOne({ email: req.body.email });
 
   if (!user) {
@@ -64,7 +65,7 @@ exports.sendmailuser = catchAsyncError(async (req, res, next) => {
 
 exports.userforgetpassword = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.params.id);
-
+  console.log(req.body);
   if (!user) {
     return next(
       new ErrorHandler("User not found with this email address !", 404)
@@ -96,7 +97,7 @@ exports.userresetpassword = catchAsyncError(async (req, res, next) => {
 exports.edituser = catchAsyncError(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(req.id, req.body, { new: true });
 
-  if(!user){
+  if (!user) {
     return next(new ErrorHandler("Please login to access the resource", 404));
   }
   if (req.files) {
@@ -129,6 +130,8 @@ exports.searchuser = catchAsyncError(async (req, res, next) => {
   const regex = new RegExp("^" + req.params.username, "i");
   const users = await User.find({ username: regex });
 
+  if (!users) return next();
+
   res.status(200).json({ users });
 });
 
@@ -140,7 +143,9 @@ exports.finduserprofile = catchAsyncError(async (req, res, next) => {
     });
   }
 
-  const finduser = await User.findOne({ username: req.params.username });
+  const finduser = await User.findOne({
+    username: req.params.username,
+  }).populate("posts");
 
   if (!finduser) {
     return next(new ErrorHandler("findUser not found with this username", 404));
@@ -180,4 +185,30 @@ exports.followAndfollowing = catchAsyncError(async (req, res, next) => {
     loggedInUser: followKarneWalaUser,
     oppositeUser: followHoneWalaUser,
   });
+});
+
+// finduser
+
+exports.findUserPost = catchAsyncError(async (req, res, next) => {
+  const finduser = await User.findById(req.params.id).populate({
+    path: "posts",
+    populate: {
+      path: "user",
+    },
+  });
+
+  if (!finduser) {
+    return next(new ErrorHandler("User Not Found !", 404));
+  }
+
+  res.status(200).json({finduser});
+});
+
+exports.findUserSavePost = catchAsyncError(async (req, res, next) => {
+  const finduser = await User.findById(req.params.id).populate("savePosts");
+
+  if (!finduser) {
+    return next(new ErrorHandler("User Not Found !", 404));
+  }
+  res.status(200).json({finduser});
 });

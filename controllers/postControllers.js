@@ -117,15 +117,19 @@ exports.savepost = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Post not found !", 404));
   }
 
+  let message;
   if (user.savePosts.indexOf(post._id) === -1) {
     user.savePosts.push(post._id);
+    message = "Post Saved Successfully";
   } else {
     user.savePosts.splice(user.savePosts.indexOf(), 1);
+    message = "Post unSaved Successfully";
   }
   await user.save();
   res.status(200).json({
     success: true,
-    message: "Post Saved Successfully",
+    message,
+    user,
   });
 });
 
