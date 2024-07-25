@@ -15,7 +15,8 @@ const {
 
   // 
   findUserPost,
-  findUserSavePost
+  findUserSavePost,
+  getAllUser
 } = require("../controllers/userControllers");
 const { isAuthenticated } = require("../middlewares/auth");
 
@@ -61,6 +62,9 @@ router.get("/user/post/:id", isAuthenticated, findUserPost);
 
 // GET /user/savepost/:userId
 router.get("/user/savepost/:id", isAuthenticated, findUserSavePost);
+
+// GET /user/chat/alluser
+router.get("/user/chat/allusers", isAuthenticated, getAllUser);
 
 
 module.exports = router;

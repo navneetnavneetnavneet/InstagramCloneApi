@@ -201,7 +201,7 @@ exports.findUserPost = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("User Not Found !", 404));
   }
 
-  res.status(200).json({finduser});
+  res.status(200).json({ finduser });
 });
 
 exports.findUserSavePost = catchAsyncError(async (req, res, next) => {
@@ -210,5 +210,12 @@ exports.findUserSavePost = catchAsyncError(async (req, res, next) => {
   if (!finduser) {
     return next(new ErrorHandler("User Not Found !", 404));
   }
-  res.status(200).json({finduser});
+  res.status(200).json({ finduser });
+});
+
+// get all users
+exports.getAllUser = catchAsyncError(async (req, res, next) => {
+  const user = await User.findById(req.id);
+  const allUser = await User.find({ _id: { $nin: [user._id] } });
+  res.status(200).json(allUser);
 });
