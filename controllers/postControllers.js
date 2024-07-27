@@ -28,7 +28,7 @@ exports.getallposts = catchAsyncError(async (req, res, next) => {
   if (!posts) {
     return next(new ErrorHandler("All Post not found !", 404));
   }
-
+  console.log(posts.length);
   res.json({ message: "All Posts", posts, user });
 });
 
@@ -168,7 +168,20 @@ exports.deletepost = catchAsyncError(async (req, res, next) => {
 exports.sendcomment = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id);
   const post = await Post.findById(req.params.id);
+
+  if (!user) {
+    return next(new ErrorHandler("User not found !", 404));
+  }
+
+  if (!post) {
+    return next(new ErrorHandler("Post not found !", 404));
+  }
+
   const comment = await new Comment(req.body).save();
+
+  if (!comment) {
+    return next(new ErrorHandler("Error for comment is not created !", 404));
+  }
 
   comment.post = post._id;
   comment.users.push(user._id);
