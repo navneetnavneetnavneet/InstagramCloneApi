@@ -28,7 +28,7 @@ exports.getallposts = catchAsyncError(async (req, res, next) => {
   if (!posts) {
     return next(new ErrorHandler("All Post not found !", 404));
   }
-  console.log(posts.length);
+  // console.log(posts.length)
   res.json({ message: "All Posts", posts, user });
 });
 
