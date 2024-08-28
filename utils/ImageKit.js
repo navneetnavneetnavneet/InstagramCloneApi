@@ -1,6 +1,6 @@
 const ImageKit = require("imagekit");
 
-exports.initImageKit = function(){
+module.exports.initImageKit = function(){
     const imagekit = new ImageKit({
       publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
       privateKey: process.env.IMAGEKIT_PRIVATE_KEY,

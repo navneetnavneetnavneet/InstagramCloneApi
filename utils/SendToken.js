@@ -1,4 +1,4 @@
-exports.sendtoken = (user, statusCode, res) => {
+module.exports.sendtoken = (user, statusCode, res) => {
   const token = user.getjwttoken();
 
   const options = {

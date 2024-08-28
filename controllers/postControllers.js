@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 const Comment = require("../models/commentModel");
 const imagekit = require("../utils/ImageKit").initImageKit();
 
-exports.getallposts = catchAsyncError(async (req, res, next) => {
+module.exports.getallposts = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id);
   const posts = await Post.find()
     .populate({
@@ -33,7 +33,7 @@ exports.getallposts = catchAsyncError(async (req, res, next) => {
 });
 
 // exports.uploadpost = catchAsyncError(async (req, res, next) => {
-// const user = await User.findById(req.id);
+//module. const user = await User.findById(req.id);
 // const post = await new Post(req.body).save();
 // if (req.files) {
 //   const file = req.files.image;
@@ -55,7 +55,7 @@ exports.getallposts = catchAsyncError(async (req, res, next) => {
 // });
 // });
 
-exports.uploadpost = catchAsyncError(async (req, res, next) => {
+module.exports.uploadpost = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id);
 
   if (!user) {
@@ -87,7 +87,7 @@ exports.uploadpost = catchAsyncError(async (req, res, next) => {
   });
 });
 
-exports.likepost = catchAsyncError(async (req, res, next) => {
+module.exports.likepost = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id);
   const post = await Post.findById(req.params.id);
 
@@ -116,7 +116,7 @@ exports.likepost = catchAsyncError(async (req, res, next) => {
   });
 });
 
-exports.savepost = catchAsyncError(async (req, res, next) => {
+module.exports.savepost = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id);
   const post = await Post.findById(req.params.id);
 
@@ -144,7 +144,7 @@ exports.savepost = catchAsyncError(async (req, res, next) => {
   });
 });
 
-exports.deletepost = catchAsyncError(async (req, res, next) => {
+module.exports.deletepost = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id);
   const post = await Post.findById(req.params.id);
 
@@ -165,7 +165,7 @@ exports.deletepost = catchAsyncError(async (req, res, next) => {
   });
 });
 
-exports.sendcomment = catchAsyncError(async (req, res, next) => {
+module.exports.sendcomment = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id);
   const post = await Post.findById(req.params.id);
 

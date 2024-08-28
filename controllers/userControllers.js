@@ -7,18 +7,18 @@ const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 const imagekit = require("../utils/ImageKit").initImageKit();
 
-exports.registeruser = catchAsyncError(async (req, res, next) => {
+module.exports.registeruser = catchAsyncError(async (req, res, next) => {
   const user = await new User(req.body).save();
 
   sendtoken(user, 201, res);
 });
 
-exports.loggedInUser = catchAsyncError(async (req, res, next) => {
+module.exports.loggedInUser = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id).populate("posts");
   res.json(user);
 });
 
-exports.loginuser = catchAsyncError(async (req, res, next) => {
+module.exports.loginuser = catchAsyncError(async (req, res, next) => {
   const user = await User.findOne({ username: req.body.username })
     .select("+password")
     .exec();
@@ -36,13 +36,13 @@ exports.loginuser = catchAsyncError(async (req, res, next) => {
   sendtoken(user, 200, res);
 });
 
-exports.logoutuser = catchAsyncError(async (req, res, next) => {
+module.exports.logoutuser = catchAsyncError(async (req, res, next) => {
   res.clearCookie("token");
 
   res.json({ message: "Logout Successfully" });
 });
 
-exports.sendmailuser = catchAsyncError(async (req, res, next) => {
+module.exports.sendmailuser = catchAsyncError(async (req, res, next) => {
   console.log(req.body.email);
   const user = await User.findOne({ email: req.body.email });
 
@@ -63,7 +63,7 @@ exports.sendmailuser = catchAsyncError(async (req, res, next) => {
   res.json({ user, url });
 });
 
-exports.userforgetpassword = catchAsyncError(async (req, res, next) => {
+module.exports.userforgetpassword = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.params.id);
   console.log(req.body);
   if (!user) {
@@ -85,7 +85,7 @@ exports.userforgetpassword = catchAsyncError(async (req, res, next) => {
   res.json({ message: "Password Changed Successfully" });
 });
 
-exports.userresetpassword = catchAsyncError(async (req, res, next) => {
+module.exports.userresetpassword = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id);
 
   user.password = req.body.password;
@@ -94,7 +94,7 @@ exports.userresetpassword = catchAsyncError(async (req, res, next) => {
   sendtoken(user, 200, res);
 });
 
-exports.edituser = catchAsyncError(async (req, res, next) => {
+module.exports.edituser = catchAsyncError(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(req.id, req.body, { new: true });
 
   if (!user) {
@@ -126,7 +126,7 @@ exports.edituser = catchAsyncError(async (req, res, next) => {
   });
 });
 
-exports.searchuser = catchAsyncError(async (req, res, next) => {
+module.exports.searchuser = catchAsyncError(async (req, res, next) => {
   const regex = new RegExp("^" + req.params.username, "i");
   const users = await User.find({ username: regex });
 
@@ -135,7 +135,7 @@ exports.searchuser = catchAsyncError(async (req, res, next) => {
   res.status(200).json({ users });
 });
 
-exports.finduserprofile = catchAsyncError(async (req, res, next) => {
+module.exports.finduserprofile = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id);
   if (user.username === req.params.username) {
     res.status(200).json({
@@ -156,7 +156,7 @@ exports.finduserprofile = catchAsyncError(async (req, res, next) => {
   });
 });
 
-exports.followAndfollowing = catchAsyncError(async (req, res, next) => {
+module.exports.followAndfollowing = catchAsyncError(async (req, res, next) => {
   const followKarneWalaUser = await User.findById(req.id); // loggedIn User
   const followHoneWalaUser = await User.findById(req.params.id); // opposite User
 
@@ -189,7 +189,7 @@ exports.followAndfollowing = catchAsyncError(async (req, res, next) => {
 
 // finduser
 
-exports.findUserPost = catchAsyncError(async (req, res, next) => {
+module.exports.findUserPost = catchAsyncError(async (req, res, next) => {
   const finduser = await User.findById(req.params.id).populate({
     path: "posts",
     populate: {
@@ -204,7 +204,7 @@ exports.findUserPost = catchAsyncError(async (req, res, next) => {
   res.status(200).json({ finduser });
 });
 
-exports.findUserSavePost = catchAsyncError(async (req, res, next) => {
+module.exports.findUserSavePost = catchAsyncError(async (req, res, next) => {
   const finduser = await User.findById(req.params.id).populate("savePosts");
 
   if (!finduser) {
@@ -214,8 +214,17 @@ exports.findUserSavePost = catchAsyncError(async (req, res, next) => {
 });
 
 // get all users
-exports.getAllUser = catchAsyncError(async (req, res, next) => {
+module.exports.getAllUser = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.id);
   const allUser = await User.find({ _id: { $nin: [user._id] } });
   res.status(200).json(allUser);
+});
+
+// get chat user
+module.exports.chatUser = catchAsyncError(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    return next(new ErrorHandler("User Not Found !", 404));
+  }
+  res.status(200).json(user);
 });
