@@ -38,8 +38,9 @@ app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
 app.use(expressfileupload());
 
 // routes
-app.use("/", require("./routes/userRouters"));
-app.use("/post", require("./routes/postRouters"));
+app.use("/", require("./routes/userRoutes"));
+app.use("/post", require("./routes/postRoutes"));
+app.use("/chat", require("./routes/messageRoutes"));
 
 // error handleing
 app.all("*", (req, res, next) => {
