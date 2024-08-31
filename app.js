@@ -10,9 +10,16 @@ const { generatedError } = require("./middlewares/errors");
 const session = require("express-session");
 const cookieparser = require("cookie-parser");
 const expressfileupload = require("express-fileupload");
+const http = require("http");
+const { initSocketIo } = require("./socket/socket");
 
 // db connection
 require("./config/database").connectDatabase();
+
+const server = http.createServer(app);
+
+// initialized socket.io
+initSocketIo(server);
 
 // session and cookie
 app.use(
@@ -49,6 +56,6 @@ app.all("*", (req, res, next) => {
 app.use(generatedError);
 
 // creating server
-app.listen(process.env.PORT, () => {
+server.listen(process.env.PORT, () => {
   console.log(`Server running on Port ${process.env.PORT}`);
 });
