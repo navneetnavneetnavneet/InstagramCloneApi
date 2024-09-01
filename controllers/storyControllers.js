@@ -39,3 +39,22 @@ module.exports.uploadStory = catchAsyncError(async (req, res, next) => {
   });
 });
 
+module.exports.getAllStories = catchAsyncError(async (req, res, next) => {
+  const user = await User.findById(req.id);
+  if (!user) {
+    return next(new ErrorHandler("User Not Found !", 404));
+  }
+
+  const stories = await Story.find().populate("user");
+  const obj = {};
+  const filteredStories = stories.filter((story) => {
+    if (!obj[story.user?._id]) {
+      obj[story.user?._id] = "kuchh bhi";
+      return true;
+    } else {
+      return false;
+    }
+  });
+
+  res.status(200).json({ stories: filteredStories, user });
+});
