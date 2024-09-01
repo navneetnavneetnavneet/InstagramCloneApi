@@ -2,7 +2,7 @@ require("dotenv").config({
   path: "./.env",
 });
 const express = require("express");
-const app = express();
+// const app = express();
 const logger = require("morgan");
 const cors = require("cors");
 const ErrorHandler = require("./utils/ErrorHandler");
@@ -10,16 +10,10 @@ const { generatedError } = require("./middlewares/errors");
 const session = require("express-session");
 const cookieparser = require("cookie-parser");
 const expressfileupload = require("express-fileupload");
-const http = require("http");
-const { initSocketIo } = require("./socket/socket");
+const { app, server } = require("./socket/socket");
 
 // db connection
 require("./config/database").connectDatabase();
-
-const server = http.createServer(app);
-
-// initialized socket.io
-initSocketIo(server);
 
 // session and cookie
 app.use(
