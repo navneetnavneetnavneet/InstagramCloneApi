@@ -42,6 +42,7 @@ app.use(expressfileupload());
 app.use("/", require("./routes/userRoutes"));
 app.use("/post", require("./routes/postRoutes"));
 app.use("/chat", require("./routes/messageRoutes"));
+app.use("/story", require("./routes/storyRoutes"));
 
 // error handleing
 app.all("*", (req, res, next) => {
