@@ -45,7 +45,14 @@ module.exports.getAllStories = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("User Not Found !", 404));
   }
 
-  const stories = await Story.find().populate("user");
+  const stories = await Story.find().populate({
+    path: "user",
+    populate: {
+      path: "stories",
+    }
+  });
+  // console.log(stories);
+  
   const obj = {};
   const filteredStories = stories.filter((story) => {
     if (!obj[story.user?._id]) {
