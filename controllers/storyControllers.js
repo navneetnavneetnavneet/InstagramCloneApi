@@ -49,10 +49,10 @@ module.exports.getAllStories = catchAsyncError(async (req, res, next) => {
     path: "user",
     populate: {
       path: "stories",
-    }
+    },
   });
   // console.log(stories);
-  
+
   const obj = {};
   const filteredStories = stories.filter((story) => {
     if (!obj[story.user?._id]) {
@@ -64,4 +64,31 @@ module.exports.getAllStories = catchAsyncError(async (req, res, next) => {
   });
 
   res.status(200).json({ stories: filteredStories, user });
+});
+
+module.exports.likeStory = catchAsyncError(async (req, res, next) => {
+  const user = await User.findById(req.id);
+  if (!user) {
+    return next(new ErrorHandler("User Not Found !", 404));
+  }
+
+  const story = await Story.findById(req.params.id);
+  if (!story) {
+    return next(new ErrorHandler("Story Not Found !", 404));
+  }
+
+  let message;
+  if (story.likes.indexOf(user._id) === -1) {
+    story.likes.push(user._id);
+    message = "Story liked successfully";
+  } else {
+    story.likes.splice(story.likes.indexOf(user._id), 1);
+    message = "Story disLiked successfully";
+  }
+  await story.save();
+
+  res.status(200).json({
+    message,
+    story,
+  });
 });
