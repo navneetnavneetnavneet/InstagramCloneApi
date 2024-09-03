@@ -63,7 +63,20 @@ module.exports.getAllStories = catchAsyncError(async (req, res, next) => {
     }
   });
 
-  res.status(200).json({ stories: filteredStories, user });
+  // loggedIn user story moved in first
+  const loggedInUserStories = filteredStories.find(
+    (story) => story.user._id.toString() === user._id.toString()
+  );
+
+  const otherUserStroies = filteredStories.filter(
+    (story) => story.user._id.toString() !== user._id.toString()
+  );
+
+  if (loggedInUserStories) {
+    otherUserStroies.unshift(loggedInUserStories);
+  }
+
+  res.status(200).json({ stories: otherUserStroies, user });
 });
 
 module.exports.likeStory = catchAsyncError(async (req, res, next) => {
