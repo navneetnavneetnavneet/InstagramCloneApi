@@ -5,6 +5,7 @@ const {
   uploadStory,
   getAllStories,
   likeStory,
+  deleteStory,
 } = require("../controllers/storyControllers");
 
 // POST /story/upload-story
@@ -15,5 +16,8 @@ router.get("/", isAuthenticated, getAllStories);
 
 // GET /story/like/:storyId
 router.get("/like/:id", isAuthenticated, likeStory);
+
+// GET /story/like/:storyId
+router.get("/delete/:id", isAuthenticated, deleteStory);
 
 module.exports = router;
