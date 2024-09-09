@@ -62,27 +62,45 @@ module.exports.uploadpost = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("User not found !", 404));
   }
 
-  const validMimeTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
+  const validMimeTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/jpg",
+    "image/webp", // Images
+    "image/gif", // GIFs
+    "video/mp4",
+    "video/mkv",
+    "video/webm", // Videos
+  ];
 
-  if (!validMimeTypes.includes(req.files?.profileImage?.mimetype)) {
+  if (!validMimeTypes.includes(req.files?.image.mimetype)) {
     return next(
       new ErrorHandler(
-        "Invalid file type. Only JPEG, PNG, JPG and WEBP files are allowed.",
+        "Invalid file type. Only JPEG, PNG, JPG, WEBP, GIF, MP4, MKV, and WEBM files are allowed.",
         500
       )
     );
   }
 
-  const maxSize = 5 * 1024 * 1024; // 5MB
+  const maxImageSize = 5 * 1024 * 1024; // 5MB for images
+  const maxVideoSize = 10 * 1024 * 1024; // 10MB for videos and GIFs
 
-  if (req.files?.profileImage?.size > maxSize) {
+  if (
+    (req.files?.image.mimetype.startsWith("image/") &&
+      req.files?.image.size > maxImageSize) ||
+    (req.files?.image.mimetype.startsWith("video/") &&
+      req.files?.image.size > maxVideoSize)
+  ) {
     return next(
       new ErrorHandler(
-        "File size exceeds the 2MB limit, Please select another file !",
+        `File size exceeds the limit. Max size: ${
+          req.files?.image.mimetype.startsWith("image/") ? "2MB" : "20MB"
+        }.`,
         500
       )
     );
   }
+
   const file = req.files.image;
   const modifiedFileName = uuidv4() + path.extname(file.name);
 
