@@ -112,10 +112,12 @@ module.exports.deleteStory = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("User Not Found !", 404));
   }
 
-  if (user.stories.includes(req.params.id)) {
-    user.stories.splice(user.stories.indexOf(req.params.id.toString()), 1);
-    await Story.findOneAndDelete({ _id: req.params.id });
+  if (!user.stories.includes(req.params.id)) {
+    return next(new ErrorHandler("Story Not Found !", 404));
   }
+
+  user.stories.splice(user.stories.indexOf(req.params.id.toString()), 1);
+  await Story.findOneAndDelete({ _id: req.params.id });
   await user.save();
 
   res.status(200).json({
