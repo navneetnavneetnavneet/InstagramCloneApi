@@ -14,4 +14,13 @@ const storySchema = new mongoose.Schema({
   },
 });
 
+// Middleware to remove the story from the user's stories array when it expires
+storySchema.post("remove", async function (dets) {
+  console.log(dets);
+
+  await mongoose.model("user").findByIdAndUpdate(dets.user, {
+    $pull: { stories: dets._id },
+  });
+});
+
 module.exports = mongoose.model("story", storySchema);
