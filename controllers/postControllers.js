@@ -171,7 +171,7 @@ module.exports.savepost = catchAsyncError(async (req, res, next) => {
     user.savePosts.push(post._id);
     message = "Post Saved Successfully";
   } else {
-    user.savePosts.splice(user.savePosts.indexOf(), 1);
+    user.savePosts.splice(user.savePosts.indexOf(post._id), 1);
     message = "Post unSaved Successfully";
   }
   await user.save();

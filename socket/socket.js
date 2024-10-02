@@ -5,6 +5,7 @@ const app = express();
 
 const server = http.createServer(app);
 
+// Set up Socket.IO with CORS settings
 const io = new Server(server, {
   cors: {
     origin: ["http://localhost:5173"],
@@ -12,26 +13,33 @@ const io = new Server(server, {
   },
 });
 
+// Store socket connections of users
+const userSocketMap = {};
+
 const getReceiverSocketId = (receiverId) => {
   return userSocketMap[receiverId];
 };
-const userSocketMap = {};
 
+// Handle socket connection
 io.on("connection", (socket) => {
   console.log("A user connected", socket.id);
 
   const userId = socket.handshake.query.userId;
   if (userId) {
     userSocketMap[userId] = socket.id;
+
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
   }
 
-  socket.emit("getOnlineUsers", Object.keys(userSocketMap));
-
-  // user disconnected
+  // Handle user disconnection
   socket.on("disconnect", () => {
     console.log("User disconnected", socket.id);
-    delete userSocketMap[userId];
-    socket.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+    if (userId) {
+      delete userSocketMap[userId];
+      
+      io.emit("getOnlineUsers", Object.keys(userSocketMap));
+    }
   });
 });
 
