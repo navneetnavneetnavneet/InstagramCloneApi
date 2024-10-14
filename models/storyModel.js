@@ -3,6 +3,11 @@ const mongoose = require("mongoose");
 const storySchema = new mongoose.Schema({
   storyUrl: {
     type: Object,
+    default: {
+      fileId: "",
+      url: "",
+      fileType: "",
+    },
   },
   user: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],

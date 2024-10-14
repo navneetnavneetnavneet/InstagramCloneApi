@@ -43,6 +43,7 @@ const userSchema = new mongoose.Schema(
       default: {
         fileId: "",
         url: "https://www.pngitem.com/pimgs/m/150-1503945_transparent-user-png-default-user-image-png-png.png",
+        fileType: "",
       },
     },
     bio: {

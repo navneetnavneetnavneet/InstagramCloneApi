@@ -7,6 +7,7 @@ const postSchema = new mongoose.Schema(
       default: {
         fileId: "",
         url: "",
+        fileType: "",
       },
       required: [true, "Image is required !"],
     },

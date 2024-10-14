@@ -62,40 +62,41 @@ module.exports.uploadpost = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("User not found !", 404));
   }
 
+  if (!req.files) {
+    return next(new ErrorHandler("Internal Server Error", 500));
+  }
+
+  const mimeType = req.files?.image?.mimetype.split("/")[0];
   const validMimeTypes = [
+    // Image MIME types
     "image/jpeg",
     "image/png",
-    "image/jpg",
-    "image/webp", // Images
-    "image/gif", // GIFs
+    "image/gif",
+    "image/webp",
+    "image/svg+xml",
+    "image/avif",
+
+    // Video MIME types
     "video/mp4",
-    "video/mkv",
-    "video/webm", // Videos
+    "video/x-msvideo",
+    "video/mpeg",
+    "video/ogg",
+    "video/webm",
+    "video/3gpp",
   ];
 
   if (!validMimeTypes.includes(req.files?.image.mimetype)) {
     return next(
-      new ErrorHandler(
-        "Invalid file type. Only JPEG, PNG, JPG, WEBP, GIF, MP4, MKV, and WEBM files are allowed.",
-        500
-      )
+      new ErrorHandler("Invalid file type. This file is not allowed.", 500)
     );
   }
 
-  const maxImageSize = 5 * 1024 * 1024; // 5MB for images
-  const maxVideoSize = 10 * 1024 * 1024; // 10MB for videos and GIFs
+  const maxSize = 10 * 1024 * 1024; // 10MB for images and videos
 
-  if (
-    (req.files?.image.mimetype.startsWith("image/") &&
-      req.files?.image.size > maxImageSize) ||
-    (req.files?.image.mimetype.startsWith("video/") &&
-      req.files?.image.size > maxVideoSize)
-  ) {
+  if (req.files?.image?.size > maxSize) {
     return next(
       new ErrorHandler(
-        `File size exceeds the limit. Max size: ${
-          req.files?.image.mimetype.startsWith("image/") ? "2MB" : "20MB"
-        }.`,
+        "File size exceeds the 10MB limit, Please select another file !",
         500
       )
     );
@@ -109,20 +110,26 @@ module.exports.uploadpost = catchAsyncError(async (req, res, next) => {
     fileName: modifiedFileName,
   });
 
-  const post = new Post({
-    image: { fileId, url },
-    caption: req.body.caption,
-    user: user._id,
-  });
-  user.posts.push(post._id);
-  await post.save();
-  await user.save();
+  if (fileId && url && mimeType) {
+    const post = new Post({
+      image: { fileId, url, fileType: mimeType },
+      caption: req.body.caption,
+      user: user._id,
+    });
 
-  res.status(201).json({
-    success: true,
-    message: "Post Uploaded Successfully",
-    post,
-  });
+    if (!post) {
+      return next(new ErrorHandler("Internal Server Error !", 500));
+    }
+
+    user.posts.push(post._id);
+    await Promise.all([user.save(), post.save()]);
+
+    res.status(201).json({
+      success: true,
+      message: "Post Uploaded Successfully",
+      post,
+    });
+  }
 });
 
 module.exports.likepost = catchAsyncError(async (req, res, next) => {
