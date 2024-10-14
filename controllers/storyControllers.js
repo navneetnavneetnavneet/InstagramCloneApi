@@ -11,7 +11,49 @@ module.exports.uploadStory = catchAsyncError(async (req, res, next) => {
   if (!user) {
     return next(new ErrorHandler("User Not Found !", 404));
   }
+
+  if (!req.files) {
+    return next(new ErrorHandler("Internal Server Error", 500));
+  }
+
   if (req.files) {
+    const mimeType = req.files?.storyUrl?.mimetype?.split("/")[0];
+
+    const validMimeTypes = [
+      // Image MIME types
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "image/svg+xml",
+      "image/avif",
+
+      // Video MIME types
+      "video/mp4",
+      "video/x-msvideo",
+      "video/mpeg",
+      "video/ogg",
+      "video/webm",
+      "video/3gpp",
+    ];
+
+    if (!validMimeTypes.includes(req.files?.storyUrl.mimetype)) {
+      return next(
+        new ErrorHandler("Invalid file type. This file is not allowed.", 500)
+      );
+    }
+
+    const maxSize = 10 * 1024 * 1024; // 10MB for images and videos
+
+    if (req.files?.storyUrl?.size > maxSize) {
+      return next(
+        new ErrorHandler(
+          "File size exceeds the 10MB limit, Please select another file !",
+          500
+        )
+      );
+    }
+
     const file = req.files?.storyUrl;
     const modifiedFileName = uuidv4() + path.extname(file.name);
 
@@ -21,16 +63,16 @@ module.exports.uploadStory = catchAsyncError(async (req, res, next) => {
     });
 
     const story = await Story.create({
-      storyUrl: { fileId, url },
+      storyUrl: { fileId, url, fileType: mimeType },
       user: user._id,
     });
 
-    if (story) {
-      user.stories.push(story._id);
-      await user.save();
-    } else {
+    if (!story) {
       return next(new ErrorHandler("Internal Server Error !", 500));
     }
+
+    user.stories.push(story._id);
+    await user.save();
   }
 
   res.status(200).json({
