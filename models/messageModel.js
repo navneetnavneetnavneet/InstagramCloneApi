@@ -6,8 +6,15 @@ const messageSchema = new mongoose.Schema(
     receiverId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
     message: {
       type: String,
-      required: [true, "Message is required !"],
       trim: true,
+    },
+    media: {
+      type: Object,
+      default: {
+        fileId: "",
+        url: "",
+        fileType: "",
+      },
     },
   },
   {
