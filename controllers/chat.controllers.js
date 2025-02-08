@@ -50,4 +50,47 @@ module.exports.accessChat = catchAsyncError(async (req, res, next) => {
   }
 });
 
+module.exports.fetchChats = catchAsyncError(async (req, res, next) => {
+  const user = await userModel.findById(req._id);
+
+  if (!user) {
+    return next(new ErrorHandler("User not found !", 404));
+  }
+
+  await chatModel
+    .find({ users: { $elemMatch: { $eq: req._id } } })
+    .populate("users")
+    .populate("groupAdmin")
+    .populate("latestMessage")
+    .sort({ updatedAt: -1 })
+    .then(async (results) => {
+      // Adding the admin to the start of the chat.users array
+      results.forEach((chat) => {
+        if (chat.isGroupChat && chat.groupAdmin) {
+          const adminIndex = chat.users.findIndex(
+            (u) => u._id.toString() === chat.groupAdmin._id.toString()
+          );
+
+          const [adminUser] = chat.users.splice(adminIndex, 1);
+          chat.users.unshift(adminUser);
+        }
+
+        // Adding the loggedInUser to the start of the chat.users array
+        const loggedInUserIndex = chat.users.findIndex(
+          (u) => u._id.toString() === user._id.toString()
+        );
+
+        const [loggedInUser] = chat.users.splice(loggedInUserIndex, 1);
+        chat.users.unshift(loggedInUser);
+      });
+
+      results = await userModel.populate(results, {
+        path: "latestMessage.senderId",
+      });
+
+      res.status(200).json(results);
+    });
+});
+
+
 

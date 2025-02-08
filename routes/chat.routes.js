@@ -12,4 +12,7 @@ router.post(
   chatController.accessChat
 );
 
+// GET /chats
+router.get("/", authMiddleware.isAuthenticated, chatController.fetchChats);
+
 module.exports = router;
