@@ -60,21 +60,21 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.pre("save", function () {
+userSchema.pre("save", async function () {
   if (!this.isModified("password")) {
     return;
   }
 
-  let salt = bcrypt.genSaltSync(10);
-  this.password = bcrypt.hashSync(this.password, salt);
+  let salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
-userSchema.methods.comparepassword = function (password) {
-  return bcrypt.compareSync(password, this.password);
+userSchema.methods.comparePassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
 };
 
-userSchema.methods.getjwttoken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+userSchema.methods.generateAuthToken = async function () {
+  return await jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE,
   });
 };

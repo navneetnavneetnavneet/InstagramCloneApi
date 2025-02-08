@@ -2,14 +2,14 @@ const mongoose = require("mongoose");
 
 const postSchema = new mongoose.Schema(
   {
-    image: {
+    media: {
       type: Object,
       default: {
         fileId: "",
         url: "",
         fileType: "",
       },
-      required: [true, "Image is required !"],
+      required: [true, "Media is required !"],
     },
     caption: {
       type: String,

@@ -6,14 +6,20 @@ const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
 const ErrorHandler = require("./utils/ErrorHandler");
-const { generatedError } = require("./middlewares/errors");
+const { generateError } = require("./middlewares/errors.middleware.js");
 const session = require("express-session");
-const cookieparser = require("cookie-parser");
+const cookieParser = require("cookie-parser");
 const expressfileupload = require("express-fileupload");
 const { app, server } = require("./socket/socket");
+const port = process.env.PORT || 3000;
+
+// const router
+const userRouter = require("./routes/user.routes.js");
+const postRouter = require("./routes/post.routes.js");
+const storyRouter = require("./routes/story.routes.js");
 
 // db connection
-require("./config/database").connectDatabase();
+require("./config/db.config.js").connectDatabase();
 
 // session and cookie
 app.use(
@@ -23,7 +29,7 @@ app.use(
     secret: process.env.EXPRESS_SESSION_SECRET,
   })
 );
-app.use(cookieparser());
+app.use(cookieParser());
 
 // logger
 app.use(logger("tiny"));
@@ -33,24 +39,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // cors
-app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
+app.use(cors({ credentials: true, origin: process.env.REACT_BASE_URL }));
 
 // express-fileupload
 app.use(expressfileupload());
 
 // routes
-app.use("/", require("./routes/userRoutes"));
-app.use("/post", require("./routes/postRoutes"));
-app.use("/chat", require("./routes/messageRoutes"));
-app.use("/story", require("./routes/storyRoutes"));
+app.use("/users", userRouter);
+app.use("/posts", postRouter);
+app.use("/stories", storyRouter);
 
 // error handleing
 app.all("*", (req, res, next) => {
   next(new ErrorHandler(`Requested URL Not Found ${req.url}`, 404));
 });
-app.use(generatedError);
+app.use(generateError);
 
 // creating server
-server.listen(process.env.PORT, () => {
-  console.log(`Server running on Port ${process.env.PORT}`);
+server.listen(port, () => {
+  console.log(`Server running on Port ${port}`);
 });

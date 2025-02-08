@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const storySchema = new mongoose.Schema({
-  storyUrl: {
+  media: {
     type: Object,
     default: {
       fileId: "",

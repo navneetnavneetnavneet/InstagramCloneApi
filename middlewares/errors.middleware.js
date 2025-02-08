@@ -1,4 +1,4 @@
-module.exports.generatedError = (err, req, res, next) => {
+module.exports.generateError = (err, req, res, next) => {
   const statusCode = err.statusCode || 500;
 
   if (
