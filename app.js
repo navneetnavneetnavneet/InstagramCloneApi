@@ -17,6 +17,7 @@ const port = process.env.PORT || 3000;
 const userRouter = require("./routes/user.routes.js");
 const postRouter = require("./routes/post.routes.js");
 const storyRouter = require("./routes/story.routes.js");
+const chatRouter = require("./routes/chat.routes.js");
 
 // db connection
 require("./config/db.config.js").connectDatabase();
@@ -48,6 +49,7 @@ app.use(expressfileupload());
 app.use("/users", userRouter);
 app.use("/posts", postRouter);
 app.use("/stories", storyRouter);
+app.use("/chats", chatRouter);
 
 // error handleing
 app.all("*", (req, res, next) => {
