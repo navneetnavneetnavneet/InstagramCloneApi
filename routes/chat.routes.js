@@ -15,4 +15,17 @@ router.post(
 // GET /chats
 router.get("/", authMiddleware.isAuthenticated, chatController.fetchChats);
 
+// POST /chats/create-group
+router.post(
+  "/create-group",
+  [
+    body("chatName").notEmpty().withMessage("chatName is required !"),
+    body("users")
+      .isLength({ min: 2 })
+      .withMessage("More than 2 users are required in group chat !"),
+  ],
+  authMiddleware.isAuthenticated,
+  chatController.createGroupChat
+);
+
 module.exports = router;

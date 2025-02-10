@@ -6,6 +6,7 @@ const chatSchema = new mongoose.Schema(
       type: String,
       minLength: [1, "Chat name must be at least 1 character"],
       trim: true,
+      unique: true,
     },
     isGroupChat: {
       type: Boolean,

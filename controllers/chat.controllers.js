@@ -92,5 +92,41 @@ module.exports.fetchChats = catchAsyncError(async (req, res, next) => {
     });
 });
 
+module.exports.createGroupChat = catchAsyncError(async (req, res, next) => {
+  const errors = validationResult(req);
 
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
 
+  const users = JSON.parse(req.body.users);
+
+  // Adding the loggedInUser to the start of the users array
+  users.unshift(req._id);
+
+  const isGroup = await chatModel.findOne({ chatName: req.body.chatName });
+
+  if (isGroup) {
+    return next(
+      new ErrorHandler("Group chat already exists with this chatName !", 400)
+    );
+  }
+
+  try {
+    const createdGroupChat = await chatModel.create({
+      chatName: req.body.chatName,
+      isGroupChat: true,
+      users: users,
+      groupAdmin: req._id,
+    });
+
+    const fullGroupChat = await chatModel
+      .findById(createdGroupChat._id)
+      .populate("users")
+      .populate("groupAdmin");
+
+    res.status(201).json(fullGroupChat);
+  } catch (error) {
+    return next(new ErrorHandler("Group chat is not created !", 500));
+  }
+});
