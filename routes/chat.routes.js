@@ -28,4 +28,10 @@ router.post(
   chatController.createGroupChat
 );
 
+// POST /chats/rename-group
+router.post("/rename-group", [
+  body("chatId", "Chat Id is required !").isMongoId(),
+  body("chatName").notEmpty().withMessage("chatName is required !"),
+], authMiddleware.isAuthenticated, chatController.renameGroupChat);
+
 module.exports = router;

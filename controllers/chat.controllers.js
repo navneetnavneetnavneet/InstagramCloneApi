@@ -130,3 +130,24 @@ module.exports.createGroupChat = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Group chat is not created !", 500));
   }
 });
+
+module.exports.renameGroupChat = catchAsyncError(async (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { chatId, chatName } = req.body;
+
+  try {
+    const updatedGroupChat = await chatModel
+      .findByIdAndUpdate(chatId, { chatName }, { new: true })
+      .populate("users")
+      .populate("groupAdmin");
+
+    res.status(200).json(updatedGroupChat);
+  } catch (error) {
+    return next(new ErrorHandler("Group chat is not renamed !", 500));
+  }
+});
