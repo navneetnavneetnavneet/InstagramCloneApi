@@ -61,4 +61,12 @@ router.post(
   chatController.removeUserFromGroupChat
 );
 
+// POST /chats/exit-user-group
+router.post(
+  "/exit-user-group",
+  [body("chatId", "Chat Id is required !").isMongoId()],
+  authMiddleware.isAuthenticated,
+  chatController.exitUserFromGroupChat
+);
+
 module.exports = router;

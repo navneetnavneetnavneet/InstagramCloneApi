@@ -207,3 +207,46 @@ module.exports.removeUserFromGroupChat = catchAsyncError(
     }
   }
 );
+
+module.exports.exitUserFromGroupChat = catchAsyncError(
+  async (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { chatId } = req.body;
+
+    const user = await userModel.findById(req._id);
+    const chat = await chatModel
+      .findById(chatId)
+      .populate("users")
+      .populate("groupAdmin");
+
+    if (!chat) {
+      return next(new ErrorHandler("Group chat is not found !", 404));
+    }
+
+    // Check if the user exists in the chat
+    const userExists = chat.users.find(
+      (u) => u._id.toString() === user._id.toString()
+    );
+
+    if (!userExists) {
+      return next(new ErrorHandler("User not found in group chat !", 404));
+    }
+
+    chat.users = chat.users.filter(
+      (u) => u._id.toString() !== user._id.toString()
+    );
+
+    if (chat.groupAdmin._id.toString() === user._id.toString()) {
+      chat.groupAdmin = chat.users[0] || null;
+    }
+
+    await chat.save();
+
+    res.status(200).json(chat);
+  }
+);
