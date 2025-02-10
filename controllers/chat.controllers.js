@@ -151,3 +151,59 @@ module.exports.renameGroupChat = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Group chat is not renamed !", 500));
   }
 });
+
+module.exports.addUserToGroupChat = catchAsyncError(async (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { chatId, userId } = req.body;
+
+  const groupChat = await chatModel.findById(chatId);
+
+  if (groupChat.users.includes(userId)) {
+    return next(new ErrorHandler("User already exists in group chat!", 400));
+  }
+
+  try {
+    const groupChat = await chatModel
+      .findByIdAndUpdate(chatId, { $push: { users: userId } }, { new: true })
+      .populate("users")
+      .populate("groupAdmin");
+
+    res.status(200).json(groupChat);
+  } catch (error) {
+    return next(new ErrorHandler("User is not added in group chat !", 500));
+  }
+});
+
+module.exports.removeUserFromGroupChat = catchAsyncError(
+  async (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { chatId, userId } = req.body;
+
+    const groupChat = await chatModel.findById(chatId);
+
+    if (!groupChat.users.includes(userId)) {
+      return next(new ErrorHandler("User not found in group chat !", 400));
+    }
+
+    try {
+      const groupChat = await chatModel
+        .findByIdAndUpdate(chatId, { $pull: { users: userId } }, { new: true })
+        .populate("users")
+        .populate("groupAdmin");
+
+      res.status(200).json(groupChat);
+    } catch (error) {
+      return next(new ErrorHandler("User is not removed in group chat !", 500));
+    }
+  }
+);

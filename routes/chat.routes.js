@@ -29,9 +29,36 @@ router.post(
 );
 
 // POST /chats/rename-group
-router.post("/rename-group", [
-  body("chatId", "Chat Id is required !").isMongoId(),
-  body("chatName").notEmpty().withMessage("chatName is required !"),
-], authMiddleware.isAuthenticated, chatController.renameGroupChat);
+router.post(
+  "/rename-group",
+  [
+    body("chatId", "Chat Id is required !").isMongoId(),
+    body("chatName").notEmpty().withMessage("chatName is required !"),
+  ],
+  authMiddleware.isAuthenticated,
+  chatController.renameGroupChat
+);
+
+// POST /chats/add-user-group
+router.post(
+  "/add-user-group",
+  [
+    body("chatId", "Chat Id is required !").isMongoId(),
+    body("userId", "User Id is required !").isMongoId(),
+  ],
+  authMiddleware.isAuthenticated,
+  chatController.addUserToGroupChat
+);
+
+// POST /chats/remove-user-group
+router.post(
+  "/remove-user-group",
+  [
+    body("chatId", "Chat Id is required !").isMongoId(),
+    body("userId", "User Id is required !").isMongoId(),
+  ],
+  authMiddleware.isAuthenticated,
+  chatController.removeUserFromGroupChat
+);
 
 module.exports = router;
